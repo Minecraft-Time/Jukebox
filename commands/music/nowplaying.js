@@ -1,3 +1,5 @@
+const Discord = require('discord.js');
+
 module.exports = {
     name: 'nowplaying',
     aliases: ['np'],
@@ -5,36 +7,49 @@ module.exports = {
     utilisation: '{prefix}nowplaying',
 
     execute(client, message) {
-        if (!message.member.voice.channel) return message.channel.send(`${client.emotes.error} - You're not in a voice channel !`);
+        const emb = new Discord.MessageEmbed()
+        .setColor('#fa9c1e')
 
-        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(`${client.emotes.error} - You are not in the same voice channel !`);
+        if (!message.member.voice.channel) {
+            emb.setDescription(`${client.emotes.error} Devi essere in un **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (!client.player.getQueue(message)) return message.channel.send(`${client.emotes.error} - No music currently playing !`);
+        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) {
+            emb.setDescription(`${client.emotes.error} Devi essere nel mio stesso **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
+
+        if (!client.player.getQueue(message)) {
+            emb.setDescription(`${client.emotes.error} **Nessun** brano **attualmente** in **riproduzione**.`)
+            return message.channel.send(emb)
+        }
 
         const track = client.player.nowPlaying(message);
         const filters = [];
 
-        Object.keys(client.player.getQueue(message).filters).forEach((filterName) => client.player.getQueue(message).filters[filterName]) ? filters.push(filterName) : false;
+        Object.keys(client.player.getQueue(message).filters).forEach((filterName) => {
+            if (client.player.getQueue(message).filters[filterName]) filters.push(filterName);
+        });
 
         message.channel.send({
             embed: {
-                color: 'RED',
+                color: '#fa9c1e',
                 author: { name: track.title },
-                footer: { text: 'This bot uses a Github project made by Zerio (ZerioDev/Music-bot)' },
                 fields: [
-                    { name: 'Channel', value: track.author, inline: true },
-                    { name: 'Requested by', value: track.requestedBy.username, inline: true },
-                    { name: 'From playlist', value: track.fromPlaylist ? 'Yes' : 'No', inline: true },
+                    { name: 'Canale', value: track.author, inline: true },
+                    { name: 'Richiesto da', value: track.requestedBy.username, inline: true },
+                    { name: 'Da Playlist', value: track.fromPlaylist ? 'Si' : 'No', inline: true },
 
                     { name: 'Views', value: track.views, inline: true },
-                    { name: 'Duration', value: track.duration, inline: true },
-                    { name: 'Filters activated', value: filters.length + '/' + client.filters.length, inline: true },
+                    { name: 'Durata', value: track.duration, inline: true },
+                    { name: 'Effetti', value: filters.length, inline: true },
 
                     { name: 'Volume', value: client.player.getQueue(message).volume, inline: true },
-                    { name: 'Repeat mode', value: client.player.getQueue(message).repeatMode ? 'Yes' : 'No', inline: true },
-                    { name: 'Currently paused', value: client.player.getQueue(message).paused ? 'Yes' : 'No', inline: true },
+                    { name: 'Loop', value: client.player.getQueue(message).repeatMode ? 'Si' : 'No', inline: true },
+                    { name: 'In Pausa', value: client.player.getQueue(message).paused ? 'Si' : 'No', inline: true },
 
-                    { name: 'Progress bar', value: client.player.createProgressBar(message, { timecodes: true }), inline: true }
+                    { name: 'Progressione', value: client.player.createProgressBar(message, { timecodes: true }), inline: true }
                 ],
                 thumbnail: { url: track.thumbnail },
                 timestamp: new Date(),

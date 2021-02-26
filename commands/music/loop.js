@@ -1,32 +1,38 @@
+const Discord = require('discord.js');
+
 module.exports = {
     name: 'loop',
-    aliases: ['lp', 'repeat'],
+    aliases: ['lp'],
     category: 'Music',
     utilisation: '{prefix}loop',
 
-    execute(client, message, args) {
-        if (!message.member.voice.channel) return message.channel.send(`${client.emotes.error} - You're not in a voice channel !`);
+    execute(client, message) {
+        const emb = new Discord.MessageEmbed()
+        .setColor('#fa9c1e')
+        
+        if (!message.member.voice.channel) {
+            emb.setDescription(`${client.emotes.error} Devi essere in un **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(`${client.emotes.error} - You are not in the same voice channel !`);
+        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) {
+            emb.setDescription(`${client.emotes.error} Devi essere nel mio stesso **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (!client.player.getQueue(message)) return message.channel.send(`${client.emotes.error} - No music currently playing !`);
+        if (!client.player.getQueue(message)) {
+            emb.setDescription(`${client.emotes.error} **Nessun** brano **attualmente** in **riproduzione**.`)
+            return message.channel.send(emb)
+        }
 
-        if (args.join(" ").toLowerCase() === 'queue') {
-            if (client.player.getQueue(message).loopMode) {
-                client.player.setLoopMode(message, false);
-                return message.channel.send(`${client.emotes.success} - Repeat mode **disabled** !`);
-            } else {
-                client.player.setLoopMode(message, true);
-                return message.channel.send(`${client.emotes.success} - Repeat mode **enabled** the whole queue will be repeated endlessly !`);
-            };
+        if (client.player.getQueue(message).repeatMode) {
+            client.player.setRepeatMode(message, false);
+            emb.setDescription(`${client.emotes.success} Ripetizione **disabilitata**!`)
+            return message.channel.send(emb);
         } else {
-            if (client.player.getQueue(message).repeatMode) {
-                client.player.setRepeatMode(message, false);
-                return message.channel.send(`${client.emotes.success} - Repeat mode **disabled** !`);
-            } else {
-                client.player.setRepeatMode(message, true);
-                return message.channel.send(`${client.emotes.success} - Repeat mode **enabled** the current music will be repeated endlessly !`);
-            };
+            client.player.setRepeatMode(message, true);
+            emb.setDescription(`${client.emotes.success} Ripetizione **abilitata**!`)
+            return message.channel.send(emb);
         };
     },
 };

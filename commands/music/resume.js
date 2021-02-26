@@ -1,20 +1,38 @@
+const Discord = require('discord.js');
+
 module.exports = {
-    name: 'resume',
-    aliases: [],
+    name: 'riprendi',
+    aliases: ['resume'],
     category: 'Music',
     utilisation: '{prefix}resume',
 
     execute(client, message) {
-        if (!message.member.voice.channel) return message.channel.send(`${client.emotes.error} - You're not in a voice channel !`);
+        const emb = new Discord.MessageEmbed()
+        .setColor('#fa9c1e')
 
-        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(`${client.emotes.error} - You are not in the same voice channel !`);
+        if (!message.member.voice.channel) {
+            emb.setDescription(`${client.emotes.error} Devi essere in un **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (!client.player.getQueue(message)) return message.channel.send(`${client.emotes.error} - No music currently playing !`);
+        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) {
+            emb.setDescription(`${client.emotes.error} Devi essere nel mio stesso **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (!client.player.getQueue(message).paused) return message.channel.send(`${client.emotes.error} - The music is already playing !`);
+        if (!client.player.getQueue(message)) {
+            emb.setDescription(`${client.emotes.error} **Nessun** brano **attualmente** in **riproduzione**.`)
+            return message.channel.send(emb)
+        }
 
-        const success = client.player.resume(message);
+        if (!client.player.getQueue(message).paused) {
+            emb.setDescription(`${client.emotes.error} La **musica** sta già **suonando**!`)
+            return message.channel.send(emb);
+        }
 
-        if (success) message.channel.send(`${client.emotes.success} - Song ${client.player.getQueue(message).playing.title} resumed !`);
+        client.player.resume(message);
+
+        emb.setDescription(`${client.emotes.success} Brano **${client.player.getQueue(message).playing.title}** ripreso.`)
+        message.channel.send(emb);
     },
 };

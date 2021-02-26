@@ -1,33 +1,49 @@
+const Discord = require('discord.js');
+
 module.exports = {
-    name: 'w-filters',
-    aliases: ['filters'],
+    name: 'effetti',
+    aliases: ['effects', 'filters'],
     category: 'Music',
-    utilisation: '{prefix}w-filters',
+    utilisation: '{prefix}effetti',
 
     execute(client, message) {
-        if (!message.member.voice.channel) return message.channel.send(`${client.emotes.error} - You're not in a voice channel !`);
+        const emb = new Discord.MessageEmbed()
+        .setColor('#fa9c1e')
+        if (!message.member.voice.channel) {
+            emb.setDescription(`${client.emotes.error} Devi essere in un **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(`${client.emotes.error} - You are not in the same voice channel !`);
+        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) {
+            emb.setDescription(`${client.emotes.error} Devi essere nel mio stesso **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (!client.player.getQueue(message)) return message.channel.send(`${client.emotes.error} - No music currently playing !`);
+        if (!client.player.getQueue(message)) {
+            emb.setDescription(`${client.emotes.error} **Nessun **brano **attualmente **in **riproduzione**.`)
+            return message.channel.send(emb)
+        }
+
+        const disabledEmoji = client.emotes.error;
+        const enabledEmoji = client.emotes.success;
 
         const filtersStatuses = [[], []];
 
-        client.filters.forEach((filterName) => {
+        Object.keys(client.filters).forEach((filterName) => {
             const array = filtersStatuses[0].length > filtersStatuses[1].length ? filtersStatuses[1] : filtersStatuses[0];
-            array.push(filterName.charAt(0).toUpperCase() + filterName.slice(1) + " : " + (client.player.getQueue(message).filters[filterName] ? client.emotes.success : client.emotes.off));
+            array.push(client.filters[filterName] + " : " + (client.player.getQueue(message).filters[filterName] ? enabledEmoji : disabledEmoji));
         });
 
         message.channel.send({
             embed: {
-                color: 'ORANGE',
-                footer: { text: 'This bot uses a Github project made by Zerio (ZerioDev/Music-bot)' },
+                color: '#fa9c1e',
                 fields: [
-                    { name: 'Filters', value: filtersStatuses[0].join('\n'), inline: true },
-                    { name: '** **', value: filtersStatuses[1].join('\n'), inline: true },
+                    { name: 'Filtri', value: filtersStatuses[0].join('\n'), inline: true },
+                    { name: '** **', value:  filtersStatuses[1].join('\n'), inline: true },
                 ],
                 timestamp: new Date(),
-                description: `List of all filters enabled or disabled.\nUse \`${client.config.discord.prefix}filter\` to add a filter to a song.`,
+                description: `List of all filters enabled or disabled.\nUse \`${client.config.prefix}filter\` to add a filter to a song.`,
+                description: `Lista di tutti gli effetti abilitati o disabilitati.\nUsa \`${client.config.prefix}effetto <effetto>\` per abilitare un effetto ad una canzone`,
             },
         });
     },

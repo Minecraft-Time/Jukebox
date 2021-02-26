@@ -1,19 +1,33 @@
+const Discord = require('discord.js');
+
 module.exports = {
     name: 'stop',
-    aliases: ['dc'],
+    aliases: ["ferma", "fermo", "dc", "disconnect", "leave"],
     category: 'Music',
     utilisation: '{prefix}stop',
 
     execute(client, message) {
-        if (!message.member.voice.channel) return message.channel.send(`${client.emotes.error} - You're not in a voice channel !`);
+        const emb = new Discord.MessageEmbed()
+        .setColor('#fa9c1e')
+        if (!message.member.voice.channel) {
+            emb.setDescription(`${client.emotes.error} Devi essere in un **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) return message.channel.send(`${client.emotes.error} - You are not in the same voice channel !`);
+        if (message.guild.me.voice.channel && message.member.voice.channel.id !== message.guild.me.voice.channel.id) {
+            emb.setDescription(`${client.emotes.error} Devi essere nel mio stesso **canale vocale** per poter **utilizzare** questo comando!`)
+            return message.channel.send(emb)
+        }
 
-        if (!client.player.getQueue(message)) return message.channel.send(`${client.emotes.error} - No music currently playing !`);
+        if (!client.player.getQueue(message)) {
+            emb.setDescription(`${client.emotes.error} **Nessun** brano **attualmente** in **riproduzione**.`)
+            return message.channel.send(emb)
+        }
 
         client.player.setRepeatMode(message, false);
-        const success = client.player.stop(message);
-
-        if (success) message.channel.send(`${client.emotes.success} - Music **stopped** into this server !`);
+        client.player.stop(message);
+        
+        emb.setDescription(`${client.emotes.success} Ho **interrotto** la **riproduzione**`)
+        message.channel.send(emb);
     },
 };

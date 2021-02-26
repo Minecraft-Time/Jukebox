@@ -1,21 +1,21 @@
-module.exports = (client, error, message, ...args) => {
+module.exports = (client, error, message) => {
+    const emb = new Discord.MessageEmbed()
+    emb.setColor('#fa9c1e')
     switch (error) {
         case 'NotPlaying':
-            message.channel.send(`${client.emotes.error} - There is no music being played on this server !`);
+            emb.setDescription(`${client.emotes.error} **Non** sto riproducendo **niente**!`)
+            message.channel.send(`${client.emotes.error} **Non** sto riproducendo **niente**!`);
             break;
         case 'NotConnected':
-            message.channel.send(`${client.emotes.error} - You are not connected in any voice channel !`);
+            emb.setDescription(`${client.emotes.error} **Non** sei connesso a nessun **canale vocale**!`)
+            message.channel.send(`${client.emotes.error} **Non** sei connesso a nessun **canale vocale**!`);
             break;
         case 'UnableToJoin':
-            message.channel.send(`${client.emotes.error} - I am not able to join your voice channel, please check my permissions !`);
-            break;
-        case 'VideoUnavailable':
-            message.channel.send(`${client.emotes.error} - ${args[0].title} is not available in your country! Skipping...`);
-            break;
-        case 'MusicStarting':
-            message.channel.send(`The music is starting... please wait and retry!`);
+            emb.setDescription(`${client.emotes.error} **Non** ho abbastanza **permessi** per entrare nel tuo **canale**!`)
+            message.channel.send(`${client.emotes.error} **Non** ho abbastanza **permessi** per entrare nel tuo **canale**!`);
             break;
         default:
-            message.channel.send(`${client.emotes.error} - Something went wrong ... Error : ${error}`);
+            emb.setDescription(`${client.emotes.error} Qualcosa è andato **storto**, Errore: \`\`\`js\n${error}\n\`\`\`!`)
+            message.channel.send(`${client.emotes.error} Qualcosa è andato **storto**, Errore: \`\`\`js\n${error}\n\`\`\`!`);
     };
 };
