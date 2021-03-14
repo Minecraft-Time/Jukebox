@@ -8,7 +8,7 @@ module.exports = {
 
     execute(client, message) {
         const emb = new Discord.MessageEmbed()
-        .setColor('#fa9c1e')
+        .setColor('#E91E63')
 
         if (!message.member.voice.channel) {
             emb.setDescription(`${client.emotes.error} Devi essere in un **canale vocale** per poter **utilizzare** questo comando!`)
@@ -34,7 +34,7 @@ module.exports = {
 
         message.channel.send({
             embed: {
-                color: '#fa9c1e',
+                color: '#E91E63',
                 author: { name: track.title },
                 fields: [
                     { name: 'Canale', value: track.author, inline: true },

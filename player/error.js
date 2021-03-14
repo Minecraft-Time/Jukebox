@@ -1,6 +1,6 @@
 module.exports = (client, error, message) => {
     const emb = new Discord.MessageEmbed()
-    emb.setColor('#fa9c1e')
+    emb.setColor('#E91E63')
     switch (error) {
         case 'NotPlaying':
             emb.setDescription(`${client.emotes.error} **Non** sto riproducendo **niente**!`)

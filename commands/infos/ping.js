@@ -8,7 +8,7 @@ module.exports = {
     execute(client, message) {
         const emb = new Discord.MessageEmbed()      
         .setDescription(`${client.emotes.success} **${client.ws.ping}ms**`)
-        .setColor('#fa9c1e');
+        .setColor('#E91E63');
         message.channel.send(emb);
     },
 };

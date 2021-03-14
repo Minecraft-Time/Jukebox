@@ -11,7 +11,7 @@ module.exports = {
 
             message.channel.send({
                 embed: {
-                    color: '#fa9c1e',
+                    color: '#E91E63',
                     author: { name: 'Aiuto' },
                     fields: [
                         { name: 'Bot', value: infos },
